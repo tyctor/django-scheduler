@@ -669,3 +669,6 @@ class Occurrence(models.Model):
         return (isinstance(other, Occurrence) and
                 self.original_start == other.original_start and
                 self.original_end == other.original_end)
+
+    def __hash__(self):
+        return hash((self.pk, self.event_id, self.title, self.start, self.end))
