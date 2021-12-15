@@ -174,8 +174,10 @@ class Event(models.Model):
     def get_rrule_object(self, tzinfo):
         if self.rule is None:
             return
-        params = self._event_params()
-        frequency = self.rule.rrule_frequency()
+        params = ['FREQ={}'.format(self.rule.frequency)]
+        if self.rule.params:
+            params.append(self.rule.params)
+
         if timezone.is_naive(self.start):
             dtstart = self.start
         else:
@@ -188,8 +190,16 @@ class Event(models.Model):
         else:
             until = tzinfo.normalize(
                 self.end_recurring_period.astimezone(tzinfo)).replace(tzinfo=None)
+        if until:
+            until = until.strftime('UNTIL=%Y%m%dT%H%M%S')
+            params.append(until)
 
-        return rrule.rrule(frequency, dtstart=dtstart, until=until, **params)
+        if self.punctumradioprogramevent:
+            event_weekdays = self.punctumradioprogramevent.get_weekdays_rule()
+            if event_weekdays:
+                params.append(event_weekdays)
+        rule = ';'.join(params)
+        return rrulestr(rule, dtstart=dtstart)
 
     def _create_occurrence(self, start, end=None):
         if end is None:
