@@ -1,6 +1,5 @@
 import icalendar
 from django.http import HttpResponse
-from django.utils.six.moves.builtins import str
 
 EVENT_ITEMS = (
     ('uid', 'uid'),

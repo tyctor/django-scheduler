@@ -9,8 +9,7 @@ from django.utils import timezone
 from django.utils.dateformat import format
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-from django.utils.six.moves.builtins import range
-from django.utils.six.moves.urllib.parse import urlencode
+from urllib.parse import urlencode
 
 from schedule.models import Calendar
 from schedule.periods import weekday_abbrs, weekday_names

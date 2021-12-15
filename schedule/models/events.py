@@ -12,8 +12,7 @@ from django.db.models import Q
 from django.template.defaultfilters import date
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ugettext
 
 from schedule.models.calendars import Calendar
@@ -46,7 +45,6 @@ class EventManager(models.Manager):
         return EventRelation.objects.get_events_for_object(content_object, distinction, inherit)
 
 
-@python_2_unicode_compatible
 class Event(models.Model):
     '''
     This model stores meta data for a date.  You can relate this data to many
@@ -521,7 +519,6 @@ class EventRelationManager(models.Manager):
             content_object=content_object)
 
 
-@python_2_unicode_compatible
 class EventRelation(models.Model):
     '''
     This is for relating data to an Event, there is also a distinction, so that
@@ -557,7 +554,6 @@ class EventRelation(models.Model):
         return '%s(%s)-%s' % (self.event.title, self.distinction, self.content_object)
 
 
-@python_2_unicode_compatible
 class Occurrence(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, verbose_name=_("event"))
     title = models.CharField(_("title"), max_length=255, blank=True)

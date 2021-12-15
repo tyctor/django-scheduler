@@ -9,8 +9,6 @@ from django.db.models.query import prefetch_related_objects
 from django.template.defaultfilters import date as date_filter
 from django.utils import timezone
 from django.utils.dates import WEEKDAYS, WEEKDAYS_ABBR
-from django.utils.encoding import python_2_unicode_compatible
-from django.utils.six.moves.builtins import range
 from django.utils.translation import ugettext
 
 from schedule.models import Occurrence
@@ -173,7 +171,6 @@ class Period(object):
         return self.utc_end.replace(tzinfo=None)
 
 
-@python_2_unicode_compatible
 class Year(Period):
     def __init__(self, events, date=None, parent_persisted_occurrences=None, tzinfo=pytz.utc):
         self.tzinfo = self._get_tzinfo(tzinfo)
@@ -213,7 +210,6 @@ class Year(Period):
         return self.start.year
 
 
-@python_2_unicode_compatible
 class Month(Period):
     """
     The month period has functions for retrieving the week periods within this period
@@ -290,7 +286,6 @@ class Month(Period):
         return self.start.year
 
 
-@python_2_unicode_compatible
 class Week(Period):
     """
     The Week period that has functions for retrieving Day periods within it
@@ -358,7 +353,6 @@ class Week(Period):
         }
 
 
-@python_2_unicode_compatible
 class Day(Period):
     def __init__(self, events, date=None, parent_persisted_occurrences=None,
                  occurrence_pool=None, tzinfo=pytz.utc):
