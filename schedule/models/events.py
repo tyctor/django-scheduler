@@ -199,7 +199,7 @@ class Event(models.Model):
             if event_weekdays:
                 params.append(event_weekdays)
         rule = ';'.join(params)
-        return rrulestr(rule, dtstart=dtstart)
+        return rrule.rrulestr(rule, dtstart=dtstart)
 
     def _create_occurrence(self, start, end=None):
         if end is None:
