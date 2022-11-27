@@ -194,10 +194,11 @@ class Event(models.Model):
             until = until.strftime('UNTIL=%Y%m%dT%H%M%S')
             params.append(until)
 
-        if self.punctumradioprogramevent:
-            event_weekdays = self.punctumradioprogramevent.get_weekdays_rule()
-            if event_weekdays:
-                params.append(event_weekdays)
+        for prop in ("punctumradioprogramevent", "soundboardevent"):
+            if hasattr(self, prop):
+                event_weekdays = getattr(self, prop).get_weekdays_rule()
+                if event_weekdays:
+                    params.append(event_weekdays)
         rule = ';'.join(params)
         return rrule.rrulestr(rule, dtstart=dtstart)
 
