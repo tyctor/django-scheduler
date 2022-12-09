@@ -194,7 +194,7 @@ class Event(models.Model):
             until = until.strftime('UNTIL=%Y%m%dT%H%M%S')
             params.append(until)
 
-        for prop in ("punctumradioprogramevent", "soundboardevent"):
+        for prop in ("punctumradioprogramevent", "announcementevent"):
             if hasattr(self, prop):
                 event_weekdays = getattr(self, prop).get_weekdays_rule()
                 if event_weekdays:
