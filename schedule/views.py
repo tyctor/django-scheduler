@@ -10,7 +10,7 @@ from django.http import (
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from urllib.parse import quote
 from django.views.decorators.http import require_POST
 from django.views.generic.base import TemplateResponseMixin
@@ -289,7 +289,7 @@ def get_next_url(request, default):
     if OCCURRENCE_CANCEL_REDIRECT:
         next_url = OCCURRENCE_CANCEL_REDIRECT
     _next_url = request.GET.get('next') if request.method in ['GET', 'HEAD'] else request.POST.get('next')
-    if _next_url and is_safe_url(url=_next_url, host=request.get_host()):
+    if _next_url and url_has_allowed_host_and_scheme(url=_next_url, host=request.get_host()):
         next_url = _next_url
     return next_url
 

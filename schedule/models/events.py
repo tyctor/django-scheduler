@@ -13,7 +13,7 @@ from django.template.defaultfilters import date
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import ugettext
+from django.utils.translation import gettext
 
 from schedule.models.calendars import Calendar
 from schedule.models.rules import Rule
@@ -87,7 +87,7 @@ class Event(models.Model):
         )
 
     def __str__(self):
-        return ugettext('%(title)s: %(start)s - %(end)s') % {
+        return gettext('%(title)s: %(start)s - %(end)s') % {
             'title': self.title,
             'start': date(self.start, django_settings.DATE_FORMAT),
             'end': date(self.end, django_settings.DATE_FORMAT),
@@ -181,15 +181,14 @@ class Event(models.Model):
         if timezone.is_naive(self.start):
             dtstart = self.start
         else:
-            dtstart = tzinfo.normalize(self.start).replace(tzinfo=None)
+            dtstart = self.start.astimezone(tzinfo).replace(tzinfo=None)
 
         if self.end_recurring_period is None:
             until = None
         elif timezone.is_naive(self.end_recurring_period):
             until = self.end_recurring_period
         else:
-            until = tzinfo.normalize(
-                self.end_recurring_period.astimezone(tzinfo)).replace(tzinfo=None)
+            until = self.end_recurring_period.astimezone(tzinfo).replace(tzinfo=None)
         if until:
             until = until.strftime('UNTIL=%Y%m%dT%H%M%S')
             params.append(until)
