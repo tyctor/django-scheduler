@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, unicode_literals
 
+import pytz
 import datetime
 
 from dateutil import rrule
@@ -215,7 +216,7 @@ class Event(models.Model):
             tzinfo = date.tzinfo
         rule = self.get_rrule_object(tzinfo)
         if rule:
-            next_occurrence = rule.after(tzinfo.normalize(date).replace(tzinfo=None), inc=True)
+            next_occurrence = rule.after(date.astimezone(tzinfo).replace(tzinfo=None), inc=True)
             next_occurrence = tzinfo.localize(next_occurrence)
         else:
             next_occurrence = self.start
@@ -249,7 +250,7 @@ class Event(models.Model):
             start_rule = self.get_rrule_object(tzinfo)
             start = start.replace(tzinfo=None)
             if timezone.is_aware(end):
-                end = tzinfo.normalize(end).replace(tzinfo=None)
+                end = end.astimezone(tzinfo).replace(tzinfo=None)
 
             o_starts = []
 
@@ -270,7 +271,7 @@ class Event(models.Model):
 
             # Create the Occurrence objects for the found start dates
             for o_start in o_starts:
-                o_start = tzinfo.localize(o_start)
+                o_start = pytz.timezone(str(tzinfo)).localize(o_start)
                 if use_naive:
                     o_start = timezone.make_naive(o_start, tzinfo)
                 o_end = o_start + duration
@@ -306,7 +307,7 @@ class Event(models.Model):
         difference = self.end - self.start
         loop_counter = 0
         for o_start in date_iter:
-            o_start = tzinfo.localize(o_start)
+            o_start = pytz.timezone(str(tzinfo)).localize(o_start)
             o_end = o_start + difference
             if o_end > after:
                 yield self._create_occurrence(o_start, o_end)
@@ -663,7 +664,7 @@ class Occurrence(models.Model):
         })
 
     def __str__(self):
-        return ugettext("%(start)s to %(end)s") % {
+        return gettext("%(start)s to %(end)s") % {
             'start': date(self.start, django_settings.DATE_FORMAT),
             'end': date(self.end, django_settings.DATE_FORMAT)
         }
