@@ -10,6 +10,7 @@ from django.contrib.contenttypes import fields
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import Q
+from django_prose_editor.fields import ProseEditorField
 from django.template.defaultfilters import date
 from django.urls import reverse
 from django.utils import timezone
@@ -54,7 +55,13 @@ class Event(models.Model):
     start = models.DateTimeField(_("start"), db_index=True)
     end = models.DateTimeField(_("end"), db_index=True, help_text=_("The end time must be later than the start time."))
     title = models.CharField(_("title"), max_length=255)
-    description = models.TextField(_("description"), blank=True)
+    description = ProseEditorField(
+        config=django_settings.PROSE_EDITOR_CONFIG,
+        blank=True,
+        null=True,
+        sanitize=True
+    )
+
     creator = models.ForeignKey(
         django_settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -83,9 +90,7 @@ class Event(models.Model):
     class Meta(object):
         verbose_name = _('event')
         verbose_name_plural = _('events')
-        index_together = (
-            ('start', 'end'),
-        )
+        indexes = [models.Index(fields=["start", "end"])]
 
     def __str__(self):
         return gettext('%(title)s: %(start)s - %(end)s') % {
@@ -559,7 +564,7 @@ class EventRelation(models.Model):
     class Meta(object):
         verbose_name = _("event relation")
         verbose_name_plural = _("event relations")
-        index_together = [('content_type', 'object_id')]
+        indexes = [models.Index(fields=["content_type", "object_id"])]
 
     def __str__(self):
         return '%s(%s)-%s' % (self.event.title, self.distinction, self.content_object)
@@ -568,7 +573,13 @@ class EventRelation(models.Model):
 class Occurrence(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, verbose_name=_("event"))
     title = models.CharField(_("title"), max_length=255, blank=True)
-    description = models.TextField(_("description"), blank=True)
+    description = ProseEditorField(
+        config=django_settings.PROSE_EDITOR_CONFIG,
+        blank=True,
+        null=True,
+        sanitize=True
+    )
+
     start = models.DateTimeField(_("start"), db_index=True)
     end = models.DateTimeField(_("end"), db_index=True)
     cancelled = models.BooleanField(_("cancelled"), default=False)
@@ -580,9 +591,7 @@ class Occurrence(models.Model):
     class Meta(object):
         verbose_name = _("occurrence")
         verbose_name_plural = _("occurrences")
-        index_together = (
-            ('start', 'end'),
-        )
+        indexes = [models.Index(fields=["start", "end"])]
 
     def __init__(self, *args, **kwargs):
         super(Occurrence, self).__init__(*args, **kwargs)
